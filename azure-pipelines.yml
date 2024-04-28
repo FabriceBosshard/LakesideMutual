@@ -12,10 +12,13 @@ variables:
   dockerfilePath: '$(Build.SourcesDirectory)/customer-core/Dockerfile'
   tag: '$(Build.BuildId)'
 
-pool: default
 stages:
 - stage: Build
   displayName: Build and push stage
+  pool: 
+   name: default
+   demands:
+    - agent.name -equals D
   jobs:
   - job: Build
     displayName: Build
