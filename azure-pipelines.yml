@@ -18,7 +18,7 @@ stages:
   pool: 
    name: default
    demands:
-    - agent.name -equals D
+    - agent.name -equals DESKTOP-VL447NR
   jobs:
   - job: Build
     displayName: Build
