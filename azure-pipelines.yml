@@ -25,3 +25,5 @@ stages:
         dockerComposeFile: 'docker-compose.yml'
         action: Run a Docker Compose command
         dockerComposeCommand: buildAndPush
+      env:
+        DOCKER_COMPOSE_DEBUG: 'true' # Enable debug logging
