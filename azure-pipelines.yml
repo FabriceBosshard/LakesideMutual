@@ -5,11 +5,8 @@ resources:
 - repo: self
 
 variables:
-  # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '92da55a5-39ea-43f0-b336-2d331a902b67'
-  imageRepository: 'customercore'
   containerRegistry: 'lakesideapp.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/customer-core/Dockerfile'
+  dockerfilePath: '$(Build.SourcesDirectory)/docker-compose'
   tag: '$(Build.BuildId)'
 
 stages:
@@ -24,11 +21,10 @@ stages:
     displayName: Build
     steps:
     - task: DockerCompose@0
-      displayName: Build and Push
       inputs:
-        containerregistrytype: 'Azure Container Registry'
-        azureSubscription: 'Azure for Students(51fc861f-a84b-440f-bfd1-f4cf184c15d3)'
+        containerregistrytype: Azure Container Registry
+        azureSubscription: Azure for Students(51fc861f-a84b-440f-bfd1-f4cf184c15d3)
         azureContainerRegistry: '{"loginServer":"lakesideapp.azurecr.io", "id" : "/subscriptions/51fc861f-a84b-440f-bfd1-f4cf184c15d3/resourceGroups/Lakeside/providers/Microsoft.ContainerRegistry/registries/LakesideApp"}'
-        dockerComposeFile: '**/docker-compose.yml'
-        action: 'Run a Docker Compose command'
-        dockerComposeCommand: 'buildAndPush'
+        dockerComposeFile: '$(dockerfilePath)'
+        action: Run a Docker Compose command
+        dockerComposeCommand: buildAndPush
