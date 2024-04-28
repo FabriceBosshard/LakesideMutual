@@ -1,14 +1,12 @@
-FROM openjdk:17-slim-buster as build
+FROM maven:3.8.4-openjdk-17-slim as build
 
 COPY .mvn .mvn
 COPY mvnw .
-COPY pom.xml .
+COPY pom.xml .                
 
-RUN ./mvnw -B dependency:go-offline                          
+COPY src src  
 
-COPY src src
-
-RUN ./mvnw -B package                                        
+RUN mvn clean install
 
 FROM openjdk:17-slim-buster
 
