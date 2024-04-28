@@ -12,10 +12,6 @@ variables:
 stages:
 - stage: Build
   displayName: Build and push stage
-  pool: 
-   name: default
-   demands:
-    - agent.name -equals DESKTOP-VL447NR
   jobs:
   - job: Build
     displayName: Build
