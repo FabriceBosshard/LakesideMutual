@@ -6,7 +6,6 @@ resources:
 
 variables:
   containerRegistry: 'lakesideapp.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/docker-compose'
   tag: '$(Build.BuildId)'
 
 stages:
@@ -23,6 +22,6 @@ stages:
         containerregistrytype: Azure Container Registry
         azureSubscription: Azure for Students(51fc861f-a84b-440f-bfd1-f4cf184c15d3)
         azureContainerRegistry: '{"loginServer":"lakesideapp.azurecr.io", "id" : "/subscriptions/51fc861f-a84b-440f-bfd1-f4cf184c15d3/resourceGroups/Lakeside/providers/Microsoft.ContainerRegistry/registries/LakesideApp"}'
-        dockerComposeFile: '$(dockerfilePath)'
+        dockerComposeFile: $(System.DefaultWorkingDirectory)
         action: Run a Docker Compose command
         dockerComposeCommand: buildAndPush
