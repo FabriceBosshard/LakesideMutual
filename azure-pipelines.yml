@@ -12,6 +12,8 @@ variables:
 stages:
 - stage: Build
   displayName: Build and push stage
+  pool:
+    name: MyPool
   jobs:
   - job: Build
     displayName: Build
