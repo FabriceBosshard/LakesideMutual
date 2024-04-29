@@ -42,16 +42,16 @@ stages:
   - job: Push
     displayName: Push
     steps:
-    - checkout: none
     - ${{ each container in parameters.containerList }}:
-      - task: Docker@2
-        displayName: Pushing ${{container}}
+      - task: DockerCompose@0
         inputs:
-          containerRegistry: 'Docker'
-          repository: '${{ container }}'
-          command: 'push'
+          containerregistrytype: 'Azure Container Registry'
+          azureSubscription: 'Azure for Students(51fc861f-a84b-440f-bfd1-f4cf184c15d3)'
+          azureContainerRegistry: '{"loginServer":"lakesideapp.azurecr.io", "id" : "/subscriptions/51fc861f-a84b-440f-bfd1-f4cf184c15d3/resourceGroups/Lakeside/providers/Microsoft.ContainerRegistry/registries/LakesideApp"}'
+          dockerComposeFile: 'docker-compose.yml'
+          action: 'Run a Docker Compose command'
+          dockerComposeCommand: 'push ${{container}}'
     
-
 - stage: RestartContainers
   displayName: Restart Container Instances
   dependsOn: Push
