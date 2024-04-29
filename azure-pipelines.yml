@@ -4,11 +4,7 @@ trigger:
 resources:
 - repo: self
 
-parameters:
-  - name: containerList
-    type: object
-    default: ["lakesidemutual/customer-management-frontend"]
-  
+parameters:  
   - name: imageList
     type: object
     default: ["customer-management-frontend"]
@@ -42,7 +38,7 @@ stages:
   - job: Push
     displayName: Push
     steps:
-    - ${{ each container in parameters.containerList }}:
+    - ${{ each image in parameters.imageList }}:
       - task: DockerCompose@0
         inputs:
           containerregistrytype: 'Azure Container Registry'
@@ -50,7 +46,7 @@ stages:
           azureContainerRegistry: '{"loginServer":"lakesideapp.azurecr.io", "id" : "/subscriptions/51fc861f-a84b-440f-bfd1-f4cf184c15d3/resourceGroups/Lakeside/providers/Microsoft.ContainerRegistry/registries/LakesideApp"}'
           dockerComposeFile: 'docker-compose.yml'
           action: 'Run a Docker Compose command'
-          dockerComposeCommand: 'push ${{container}}'
+          dockerComposeCommand: 'push ${{image}}'
     
 - stage: RestartContainers
   displayName: Restart Container Instances
