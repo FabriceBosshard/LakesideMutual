@@ -18,7 +18,7 @@ stages:
     steps:
     - script: |
         # Build and push individual Docker images for each service
-        services=(customer-core customer-management-backend customer-management-frontend customer-self-service-backend customer-self-service-frontend)
+        services=(customer-core)
         for service in "${services[@]}"; do
           docker compose build $service
           docker tag $(tag)/$service $(containerRegistry)/$service
@@ -27,6 +27,7 @@ stages:
       displayName: 'Build and push Docker images'
       env:
         DOCKER_BUILDKIT: '1'
+        DOCKER_COMPOSE_DEBUG: 'true' # Enable debug logging
 
 - stage: RestartContainers
   displayName: Restart Container Instances
