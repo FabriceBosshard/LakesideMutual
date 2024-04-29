@@ -7,6 +7,7 @@ resources:
 variables:
   containerRegistry: 'lakesideapp.azurecr.io'
   tag: 'lakesidemutual'
+  resourceGroupName: 'Lakeside'
 
 stages:
 - stage: BuildAndPush
@@ -26,4 +27,21 @@ stages:
       displayName: 'Build and push Docker images'
       env:
         DOCKER_BUILDKIT: '1'
-        DOCKER_COMPOSE_DEBUG: 'true' # Enable debug logging
+
+- stage: RestartContainers
+  displayName: Restart Container Instances
+  dependsOn: BuildAndPush
+  jobs:
+  - job: Restart
+    displayName: Restart
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'Azure for Students(51fc861f-a84b-440f-bfd1-f4cf184c15d3)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          container_instances=$(az container list --resource-group $(resourceGroupName) --query "[].name" -o tsv)
+          for instance in $container_instances; do
+              az container restart --name $instance --resource-group $(resourceGroupName)
+          done
