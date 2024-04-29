@@ -6,7 +6,7 @@ resources:
 
 variables:
   containerRegistry: 'lakesideapp.azurecr.io'
-  tag: '$(Build.BuildId)'
+  tag: 'lakesidemutual'
 
 stages:
 - stage: BuildAndPush
@@ -19,8 +19,9 @@ stages:
         # Build and push individual Docker images for each service
         services=(customer-core customer-management-backend customer-management-frontend customer-self-service-backend customer-self-service-frontend)
         for service in "${services[@]}"; do
-          docker compose build -t $(containerRegistry)/$service:$(tag) -f $service/Dockerfile .
-          docker compose push $(containerRegistry)/$service:$(tag)
+          docker compose build $service
+          docker tag $(tag)/$service $(containerRegistry)/$service
+          docker push $(containerRegistry)/$service
         done
       displayName: 'Build and push Docker images'
       env:
