@@ -15,23 +15,14 @@ stages:
   - job: Build
     displayName: Build
     steps:
-    - task: DockerCompose@0
-      inputs:
-        containerregistrytype: 'Azure Container Registry'
-        azureSubscription: 'Azure for Students(51fc861f-a84b-440f-bfd1-f4cf184c15d3)'
-        azureContainerRegistry: '{"loginServer":"lakesideapp.azurecr.io", "id" : "/subscriptions/51fc861f-a84b-440f-bfd1-f4cf184c15d3/resourceGroups/Lakeside/providers/Microsoft.ContainerRegistry/registries/LakesideApp"}'
-        dockerComposeFile: '**/docker-compose.yml'
-        action: 'Run a Docker Compose command'
-        dockerComposeCommand: 'build'
+    - script: |
+        # Build and push individual Docker images for each service
+        services=(customer-core customer-management-backend customer-management-frontend customer-self-service-backend customer-self-service-frontend)
+        for service in "${services[@]}"; do
+          docker compose build -t $(containerRegistry)/$service:$(tag) -f $service/Dockerfile .
+          docker compose push $(containerRegistry)/$service:$(tag)
+        done
+      displayName: 'Build and push Docker images'
       env:
-        DOCKER_COMPOSE_DEBUG: 'true' # Enable debug logging
-    - task: DockerCompose@0
-      inputs:
-        containerregistrytype: 'Azure Container Registry'
-        azureSubscription: 'Azure for Students(51fc861f-a84b-440f-bfd1-f4cf184c15d3)'
-        azureContainerRegistry: '{"loginServer":"lakesideapp.azurecr.io", "id" : "/subscriptions/51fc861f-a84b-440f-bfd1-f4cf184c15d3/resourceGroups/Lakeside/providers/Microsoft.ContainerRegistry/registries/LakesideApp"}'
-        dockerComposeFile: '**/docker-compose.yml'
-        action: 'Run a Docker Compose command'
-        dockerComposeCommand: 'push'
-      env:
+        DOCKER_BUILDKIT: '1'
         DOCKER_COMPOSE_DEBUG: 'true' # Enable debug logging
