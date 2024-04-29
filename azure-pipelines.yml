@@ -18,9 +18,9 @@ stages:
     steps:
     - script: |
         # Build and push individual Docker images for each service
-        services=(customer-core)
+        services=(customer-management-frontend)
         for service in "${services[@]}"; do
-          #docker compose build $service
+          docker compose build $service
           docker tag $(tag)/$service $(containerRegistry)/$service
           docker push $(containerRegistry)/$service
         done
