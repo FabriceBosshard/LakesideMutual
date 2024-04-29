@@ -38,6 +38,7 @@ stages:
   - job: Push
     displayName: Push
     steps:
+    - checkout: none
     - ${{ each image in parameters.imageList }}:
       - task: DockerCompose@0
         inputs:
