@@ -17,6 +17,8 @@ stages:
     displayName: Build
     steps:
     - script: |
+        az acr login --name Lakeside
+
         # Build and push individual Docker images for each service
         services=(customer-management-frontend)
         for service in "${services[@]}"; do
