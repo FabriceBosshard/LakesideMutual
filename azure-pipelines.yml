@@ -45,7 +45,7 @@ stages:
         displayName: Pushing ${{container}}
         inputs:
           containerRegistry: 'Docker'
-          repository: 'lakesidemutual/customer-management-frontend'
+          repository: ${{container}}
           command: 'push'
     
 
