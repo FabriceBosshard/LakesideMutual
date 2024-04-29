@@ -4,36 +4,54 @@ trigger:
 resources:
 - repo: self
 
+parameters:
+  - name: containerList
+    type: object
+    default: ["lakesidemutual/customer-management-frontend"]
+
 variables:
   containerRegistry: 'lakesideapp.azurecr.io'
   tag: 'lakesidemutual'
   resourceGroupName: 'Lakeside'
 
 stages:
-- stage: BuildAndPush
-  displayName: Build and Push stage
+- stage: Build
+  displayName: Build stage
   jobs:
   - job: Build
     displayName: Build
     steps:
     - script: |
-        az acr login --name Lakeside
-
-        # Build and push individual Docker images for each service
+        # Build individual Docker images for each service
         services=(customer-management-frontend)
         for service in "${services[@]}"; do
           docker compose build $service
-          docker tag $(tag)/$service $(containerRegistry)/$service
-          docker push $(containerRegistry)/$service
         done
       displayName: 'Build and push Docker images'
       env:
         DOCKER_BUILDKIT: '1'
         DOCKER_COMPOSE_DEBUG: 'true' # Enable debug logging
 
+- stage: Push
+  displayName: Push stage
+  dependsOn: Build
+  jobs:
+  - job: Push
+    displayName: Push
+    steps:
+    - checkout: none
+    - ${{ each container in parameters.containerList }}:
+      - task: Docker@2
+        displayName: Pushing ${{container}}
+        inputs:
+          containerRegistry: 'Docker'
+          repository: '${{container}}'
+          command: 'push'
+    
+
 - stage: RestartContainers
   displayName: Restart Container Instances
-  dependsOn: BuildAndPush
+  dependsOn: Push
   jobs:
   - job: Restart
     displayName: Restart
