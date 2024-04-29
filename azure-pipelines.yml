@@ -8,6 +8,10 @@ parameters:
   - name: containerList
     type: object
     default: ["lakesidemutual/customer-management-frontend"]
+  
+  - name: imageList
+    type: object
+    default: ["customer-management-frontend"]
 
 variables:
   containerRegistry: 'lakesideapp.azurecr.io'
@@ -21,16 +25,15 @@ stages:
   - job: Build
     displayName: Build
     steps:
-    - script: |
-        # Build individual Docker images for each service
-        services=(customer-management-frontend)
-        for service in "${services[@]}"; do
-          docker compose build $service
-        done
-      displayName: 'Build and push Docker images'
-      env:
-        DOCKER_BUILDKIT: '1'
-        DOCKER_COMPOSE_DEBUG: 'true' # Enable debug logging
+    - ${{ each image in parameters.imageList }}:
+      - task: DockerCompose@0
+        inputs:
+          containerregistrytype: 'Azure Container Registry'
+          azureSubscription: 'Azure for Students(51fc861f-a84b-440f-bfd1-f4cf184c15d3)'
+          azureContainerRegistry: '{"loginServer":"lakesideapp.azurecr.io", "id" : "/subscriptions/51fc861f-a84b-440f-bfd1-f4cf184c15d3/resourceGroups/Lakeside/providers/Microsoft.ContainerRegistry/registries/LakesideApp"}'
+          dockerComposeFile: '**/docker-compose.yml'
+          action: 'Run a Docker Compose command'
+          dockerComposeCommand: 'build ${{image}}'
 
 - stage: Push
   displayName: Push stage
