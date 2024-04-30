@@ -30,15 +30,6 @@ stages:
           dockerComposeFile: 'docker-compose.yml'
           action: 'Run a Docker Compose command'
           dockerComposeCommand: 'build ${{image}}'
-
-- stage: Push
-  displayName: Push stage
-  dependsOn: Build
-  jobs:
-  - job: Push
-    displayName: Push
-    steps:
-    - checkout: none
     - ${{ each image in parameters.imageList }}:
       - task: DockerCompose@0
         inputs:
@@ -48,10 +39,10 @@ stages:
           dockerComposeFile: 'docker-compose.yml'
           action: 'Run a Docker Compose command'
           dockerComposeCommand: 'push lakesideapp.azurecr.io/lakesidemutual/${{image}}'
-    
+          
 - stage: RestartContainers
   displayName: Restart Container Instances
-  dependsOn: Push
+  dependsOn: Build
   jobs:
   - job: Restart
     displayName: Restart
