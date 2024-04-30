@@ -8,12 +8,15 @@ trigger:
 resources:
 - repo: self
 
+parameters:  
+  - name: imageList
+    type: object
+    default: ["customer-core customer-management-backend customer-management-frontend"]
+
 variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '0bd14638-02c0-4b17-9ac0-ab901aaca809'
-  imageRepository: 'customermanagementfrontend'
   containerRegistry: 'lakesideapp.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/customer-management-frontend/Dockerfile'
   tag: '$(Build.BuildId)'
 
   # Agent VM image name
@@ -28,12 +31,13 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
-    - task: Docker@2
-      displayName: Build and push an image to container registry
-      inputs:
-        command: buildAndPush
-        repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
-        tags: |
-          $(tag)
+    - ${{ each image in parameters.imageList }}:
+      - task: Docker@2
+        displayName: Build and push an image to container registry
+        inputs:
+          command: buildAndPush
+          repository: ${{image}}
+          dockerfile: '$(Build.SourcesDirectory)/{{$image}}/Dockerfile'
+          containerRegistry: $(dockerRegistryServiceConnection)
+          tags: |
+            $(tag)
