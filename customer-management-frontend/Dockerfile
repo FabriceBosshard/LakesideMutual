@@ -10,6 +10,7 @@ FROM nginx:stable-alpine
 COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /usr/src/app/build /usr/share/nginx/html
 EXPOSE 80
+EXPOSE 3020
 WORKDIR /usr/share/nginx/html
 
 RUN apk add --no-cache nodejs npm
