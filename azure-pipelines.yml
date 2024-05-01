@@ -67,7 +67,7 @@ stages:
     - task: AzureCLI@2
       inputs:
         azureSubscription: 'Azure for Students(51fc861f-a84b-440f-bfd1-f4cf184c15d3)'
-        scriptType: 'batch'
+        scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
           container_instances=$(az container list --resource-group Lakeside --query "[].name" -o tsv)
